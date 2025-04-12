@@ -82,18 +82,28 @@ exports.login = async (req, res) => {
 
 
 
+const bcrypt = require('bcryptjs');
+const admin = require('firebase-admin');
+const User = require('../models/User'); // Adjust path as needed
+
 exports.resetPassword = async (req, res) => {
   try {
     const { phone, newPassword, firebaseToken } = req.body;
 
+    // 1. Verify Firebase token
     const decodedToken = await admin.auth().verifyIdToken(firebaseToken);
     if (decodedToken.phone_number !== phone)
       return res.status(400).json({ message: "Phone number mismatch" });
 
+    // 2. Find user
     const user = await User.findOne({ phone });
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    user.password = newPassword;
+    // 3. Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // 4. Save the new hashed password
+    user.password = hashedPassword;
     await user.save();
 
     res.status(200).json({ message: "Password reset successful" });
@@ -101,3 +111,4 @@ exports.resetPassword = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
