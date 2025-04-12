@@ -25,7 +25,7 @@ exports.signup = async (req, res) => {
     const userId = await generateUserId(role);
     const hashedPassword = await bcryptjs.hash(password, 10);
 
-    const newUser = new User({ userId, name, role, phone, email, password: hashedPassword });
+    const newUser = new User({ userId, name, role, phone, email, password: hashedPassword, firebaseUid });
     await newUser.save();
 
     res.status(201).json({ message: "User registered successfully", userId });
@@ -83,22 +83,13 @@ exports.login = async (req, res) => {
 
 exports.resetPassword = async (req, res) => {
   try {
-    const { phone, newPassword, firebaseToken } = req.body;
-
-    if (!phone || !newPassword || !firebaseToken) {
-      return res.status(400).json({ message: "Missing required fields" });
-    }
+    const { newPassword, firebaseToken } = req.body;
 
     const decodedToken = await admin.auth().verifyIdToken(firebaseToken);
-    
-    // Optional: Match phone from token
-    if (decodedToken.phone_number !== phone) {
-      return res.status(400).json({ message: "Phone number mismatch" });
-    }
+    const firebaseUid = decodedToken.uid;
 
-    const user = await User.findOne({ phone });
+    const user = await User.findOne({ firebaseUid });
     if (!user) return res.status(404).json({ message: "User not found" });
-    
 
     const hashedPassword = await bcryptjs.hash(newPassword, 10);
     user.password = hashedPassword;
@@ -106,9 +97,9 @@ exports.resetPassword = async (req, res) => {
 
     res.status(200).json({ message: "Password reset successful" });
   } catch (err) {
-    console.error(err); // Print full error in terminal
     res.status(500).json({ error: err.message });
   }
 };
+
 
 
