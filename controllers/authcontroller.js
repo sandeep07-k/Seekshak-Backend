@@ -85,20 +85,28 @@ exports.resetPassword = async (req, res) => {
   try {
     const { phone, newPassword, firebaseToken } = req.body;
 
-    const decodedToken = await admin.auth().verifyIdToken(firebaseToken);
-    if (decodedToken.phone_number !== phone)
-      return res.status(400).json({ message: "Phone number mismatch" });
+    if (!phone || !newPassword || !firebaseToken) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
 
+    const decodedToken = await admin.auth().verifyIdToken(firebaseToken);
+    
     const user = await User.findOne({ phone });
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    console.log("Phone:", phone);
+    console.log("New Password:", newPassword);
+    console.log("Firebase Token:", firebaseToken);
+
+    const hashedPassword = await bcryptjs.hash(newPassword, 10);
     user.password = hashedPassword;
     await user.save();
 
     res.status(200).json({ message: "Password reset successful" });
   } catch (err) {
+    console.error(err); // Print full error in terminal
     res.status(500).json({ error: err.message });
   }
 };
+
 
