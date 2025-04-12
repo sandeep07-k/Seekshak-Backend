@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const admin = require("../config/firebase");
 const User = require("../models/User");
 
+
 // Helper to generate userId
 const generateUserId = async (role) => {
   const prefix = role.charAt(0).toUpperCase();
@@ -18,6 +19,7 @@ const generateUserId = async (role) => {
 exports.signup = async (req, res) => {
   try {
     const { role,name, email , phone, password} = req.body;
+    const firebaseUid = req.firebaseUid;
 
     const existingUser = await User.findOne({ email, phone });
     if (existingUser) return res.status(400).json({ message: "User already exists" });
