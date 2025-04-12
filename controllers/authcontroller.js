@@ -17,7 +17,7 @@ const generateUserId = async (role) => {
 
 exports.signup = async (req, res) => {
   try {
-    const { role, phone, password, email } = req.body;
+    const { role,name, email , phone, password} = req.body;
 
     const existingUser = await User.findOne({ email, phone });
     if (existingUser) return res.status(400).json({ message: "User already exists" });
@@ -25,7 +25,7 @@ exports.signup = async (req, res) => {
     const userId = await generateUserId(role);
     const hashedPassword = await bcryptjs.hash(password, 10);
 
-    const newUser = new User({ userId, role, phone, email, password: hashedPassword });
+    const newUser = new User({ userId, name, role, phone, email, password: hashedPassword });
     await newUser.save();
 
     res.status(201).json({ message: "User registered successfully", userId });
@@ -36,22 +36,37 @@ exports.signup = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    const { userId, email, password } = req.body;
+    const { userId, email, phone, password } = req.body;
 
-    let query = email ? { email } : mongoose.Types.ObjectId.isValid(userId)
-      ? { _id: userId } : { userId };
+    // Build the query based on which identifier is provided
+    let query = {};
 
+    if (email) {
+      query.email = email;
+    } else if (phone) {
+      query.phone = phone;
+    } else if (userId) {
+      if (mongoose.Types.ObjectId.isValid(userId)) {
+        query._id = userId;
+      } else {
+        query.userId = userId;
+      }
+    } else {
+      return res.status(400).json({ message: "Please provide email, phone, or userId" });
+    }
+
+    // Find the user
     const user = await User.findOne(query);
     if (!user) return res.status(401).json({ message: "Invalid credentials" });
 
+    // Check password
     const isMatch = await bcryptjs.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ message: "Wrong password" });
 
+    // Success response
     res.status(200).json({
       message: "Login successful",
-      // Id: user._id,
       UserId: user.userId,
-      // email: user.email,
       role: user.role
     });
 
@@ -59,6 +74,7 @@ exports.login = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 exports.resetPassword = async (req, res) => {
   try {
