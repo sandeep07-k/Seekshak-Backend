@@ -36,7 +36,7 @@ exports.signup = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    const { userId, email, phone, password } = req.body;
+    const { role, userId, email, phone, password } = req.body;
 
     // Build the query based on which identifier is provided
     let query = {};
@@ -59,6 +59,11 @@ exports.login = async (req, res) => {
     const user = await User.findOne(query);
     if (!user) return res.status(401).json({ message: "Invalid credentials" });
 
+    // Check role
+    if (user.role !== role) {
+      return res.status(403).json({ message: "Role mismatch. Access denied." });
+    }
+
     // Check password
     const isMatch = await bcryptjs.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ message: "Wrong password" });
@@ -74,6 +79,7 @@ exports.login = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 
 exports.resetPassword = async (req, res) => {
