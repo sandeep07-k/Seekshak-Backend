@@ -81,11 +81,6 @@ exports.login = async (req, res) => {
 };
 
 
-
-const bcrypt = require('bcryptjs');
-const admin = require('firebase-admin');
-const User = require('../models/User'); // Adjust path as needed
-
 exports.resetPassword = async (req, res) => {
   try {
     const { phone, newPassword, firebaseToken } = req.body;
