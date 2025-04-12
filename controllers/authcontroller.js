@@ -91,12 +91,14 @@ exports.resetPassword = async (req, res) => {
 
     const decodedToken = await admin.auth().verifyIdToken(firebaseToken);
     
+    // Optional: Match phone from token
+    if (decodedToken.phone_number !== phone) {
+      return res.status(400).json({ message: "Phone number mismatch" });
+    }
+
     const user = await User.findOne({ phone });
     if (!user) return res.status(404).json({ message: "User not found" });
-
-    console.log("Phone:", phone);
-    console.log("New Password:", newPassword);
-    console.log("Firebase Token:", firebaseToken);
+    
 
     const hashedPassword = await bcryptjs.hash(newPassword, 10);
     user.password = hashedPassword;
