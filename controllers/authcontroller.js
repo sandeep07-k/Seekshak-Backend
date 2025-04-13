@@ -104,4 +104,40 @@ exports.resetPassword = async (req, res) => {
 };
 
 
+// Check if the user exists by phone number
+exports.checkUserExists = async (req, res) => {
+  const { phone } = req.query;
+
+  if (!phone) {
+      return res.status(400).json({ error: 'Phone number is required' });
+  }
+
+  try {
+      // Clean up the phone number by removing spaces
+      let formattedPhone = phone.replace(/\s+/g, '');  // Remove all spaces
+
+      // Ensure the phone number starts with '+91'
+      if (!formattedPhone.startsWith('+91')) {
+          formattedPhone = '+91' + formattedPhone;
+      }
+
+      console.log("Checking for user with formatted phone:", formattedPhone);
+
+      // Find user with the formatted phone number
+      const user = await User.findOne({ phone: formattedPhone });
+
+      if (user) {
+          return res.status(200).json({ exists: true });
+      } else {
+          return res.status(200).json({ exists: false });
+      }
+  } catch (err) {
+      console.error("Error checking user:", err);
+      return res.status(500).json({ error: "Server error. Try again later." });
+  }
+};
+
+
+
+
 
