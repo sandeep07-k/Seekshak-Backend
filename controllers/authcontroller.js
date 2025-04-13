@@ -147,7 +147,7 @@ exports.checkUserExists = async (req, res) => {
     } else if (phoneExists) {
       return res.status(200).json({
         exists: true,
-        message: "Phone number already registered"
+        message: "Phone number already registered.Please Login"
       });
     } else if (emailExists) {
       return res.status(200).json({
