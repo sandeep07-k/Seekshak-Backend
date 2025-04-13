@@ -109,46 +109,39 @@ exports.checkUserExists = async (req, res) => {
   const { phone, email } = req.query;
 
   if (!phone && !email) {
-    return res.status(400).json({ error: 'Phone number or email is required' });
+      return res.status(400).json({ error: 'Phone number or email is required' });
   }
 
   try {
-    // Clean up the phone number by removing spaces
-    let formattedPhone = phone ? phone.replace(/\s+/g, '') : null;
+      let formattedPhone = phone ? phone.replace(/\s+/g, '') : null;
 
-    // Ensure the phone number starts with '+91' if phone is provided
-    if (formattedPhone && !formattedPhone.startsWith('+91')) {
-      formattedPhone = '+91' + formattedPhone;
-    }
-
-    if (formattedPhone) {
-      console.log("Checking for user with formatted phone:", formattedPhone);
-      // Check if a user exists with the formatted phone number
-      const phoneUser = await User.findOne({ phone: formattedPhone });
-      if (phoneUser) {
-        return res.status(200).json({ exists: true, message: 'User exists with this phone' });
+      if (formattedPhone && !formattedPhone.startsWith('+91')) {
+          formattedPhone = '+91' + formattedPhone;
       }
-    }
 
-    if (email) {
-      console.log("Checking for user with email:", email);
-      // Check if a user exists with the provided email
-      const emailUser = await User.findOne({ email: email });
-      if (emailUser) {
-        return res.status(200).json({ exists: true, message: 'User exists with this email' });
+      console.log("Checking user with phone:", formattedPhone, "and email:", email);
+
+      const user = await User.findOne({
+          $or: [
+              { phone: formattedPhone },
+              { email: email }
+          ]
+      });
+
+      if (user) {
+          return res.status(200).json({
+              exists: true,
+              message: 'User already exists. Please login.'
+          });
+      } else {
+          return res.status(200).json({
+              exists: false,
+              message: 'No user found with this phone or email'
+          });
       }
-    }
 
-    // If no user is found with either phone or email
-    return res.status(200).json({ exists: false, message: 'No user found with this phone or email' });
   } catch (err) {
-    console.error("Error checking user:", err);
-    return res.status(500).json({ error: "Server error. Try again later." });
+      console.error("Error checking user:", err);
+      return res.status(500).json({ error: "Server error. Try again later." });
   }
 };
-
-
-
-
-
-
