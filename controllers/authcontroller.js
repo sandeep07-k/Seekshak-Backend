@@ -27,7 +27,7 @@ exports.signup = async (req, res) => {
     const userId = await generateUserId(role);
     const hashedPassword = await bcryptjs.hash(password, 10);
 
-    const newUser = new User({ userId, name, role, phone, email, password: hashedPassword, firebaseUid });
+    const newUser = new User({ userId, name, role, gender, phone, email, password: hashedPassword, firebaseUid });
     await newUser.save();
 
     res.status(201).json({ message: "User registered successfully", userId });
@@ -106,36 +106,47 @@ exports.resetPassword = async (req, res) => {
 
 // Check if the user exists by phone number
 exports.checkUserExists = async (req, res) => {
-  const { phone } = req.query;
+  const { phone, email } = req.query;
 
-  if (!phone) {
-      return res.status(400).json({ error: 'Phone number is required' });
+  if (!phone && !email) {
+    return res.status(400).json({ error: 'Phone number or email is required' });
   }
 
   try {
-      // Clean up the phone number by removing spaces
-      let formattedPhone = phone.replace(/\s+/g, '');  // Remove all spaces
+    // Clean up the phone number by removing spaces
+    let formattedPhone = phone ? phone.replace(/\s+/g, '') : null;
 
-      // Ensure the phone number starts with '+91'
-      if (!formattedPhone.startsWith('+91')) {
-          formattedPhone = '+91' + formattedPhone;
-      }
+    // Ensure the phone number starts with '+91' if phone is provided
+    if (formattedPhone && !formattedPhone.startsWith('+91')) {
+      formattedPhone = '+91' + formattedPhone;
+    }
 
+    if (formattedPhone) {
       console.log("Checking for user with formatted phone:", formattedPhone);
-
-      // Find user with the formatted phone number
-      const user = await User.findOne({ phone: formattedPhone });
-
-      if (user) {
-          return res.status(200).json({ exists: true });
-      } else {
-          return res.status(200).json({ exists: false });
+      // Check if a user exists with the formatted phone number
+      const phoneUser = await User.findOne({ phone: formattedPhone });
+      if (phoneUser) {
+        return res.status(200).json({ exists: true, message: 'User exists with this phone' });
       }
+    }
+
+    if (email) {
+      console.log("Checking for user with email:", email);
+      // Check if a user exists with the provided email
+      const emailUser = await User.findOne({ email: email });
+      if (emailUser) {
+        return res.status(200).json({ exists: true, message: 'User exists with this email' });
+      }
+    }
+
+    // If no user is found with either phone or email
+    return res.status(200).json({ exists: false, message: 'No user found with this phone or email' });
   } catch (err) {
-      console.error("Error checking user:", err);
-      return res.status(500).json({ error: "Server error. Try again later." });
+    console.error("Error checking user:", err);
+    return res.status(500).json({ error: "Server error. Try again later." });
   }
 };
+
 
 
 
