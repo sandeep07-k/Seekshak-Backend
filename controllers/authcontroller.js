@@ -123,7 +123,7 @@ exports.checkUserExists = async (req, res) => {
     email = email.trim().toLowerCase();
   }
 
-  console.log("Checking for user with:", { phone, email });
+  // console.log("Checking for user with:", { phone, email });
 
   try {
     let phoneExists = false;
