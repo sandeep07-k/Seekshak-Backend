@@ -18,10 +18,5 @@ const userSchema = new mongoose.Schema({
     unique: true,
   },
 });
-userSchema.pre('save', function(next) {
-  if (!req.body.email) {
-    req.body.email = "not_provided";
-  }  
-  next();
-});
+
 module.exports = mongoose.model("User", userSchema);

@@ -18,16 +18,34 @@ const generateUserId = async (role) => {
 
 exports.signup = async (req, res) => {
   try {
-    const { role,name, email , phone, password} = req.body;
+    const { role, name, phone, password } = req.body;
+    let { email } = req.body;
     const firebaseUid = req.firebaseUid;
 
-    const existingUser = await User.findOne({ email, phone });
-    if (existingUser) return res.status(400).json({ message: "User already exists" });
+    // ✅ Set email to a default string if not provided
+    if (!email || email.trim() === "") {
+      email = "not_provided";
+    }
+
+    // ✅ Check for existing user by phone only (email might be default)
+    const existingUser = await User.findOne({ phone });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
+    }
 
     const userId = await generateUserId(role);
     const hashedPassword = await bcryptjs.hash(password, 10);
 
-    const newUser = new User({ userId, name, role, phone, email, password: hashedPassword, firebaseUid });
+    const newUser = new User({
+      userId,
+      name,
+      role,
+      phone,
+      email,
+      password: hashedPassword,
+      firebaseUid,
+    });
+
     await newUser.save();
 
     res.status(201).json({ message: "User registered successfully", userId });
