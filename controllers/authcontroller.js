@@ -19,13 +19,18 @@ const generateUserId = async (role) => {
 exports.signup = async (req, res) => {
   try {
     const { role, name, phone, password } = req.body;
-    let { email } = req.body;
     const firebaseUid = req.firebaseUid;
 
-    // ✅ Check for existing user by phone only (email might be default)
     const existingUser = await User.findOne({ phone });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
+    }
+
+    // ✅ Fix: remove email field if it's blank
+    if (req.body.email && req.body.email.trim() !== "") {
+      req.body.email = req.body.email.trim();
+    } else {
+      delete req.body.email;
     }
 
     const userId = await generateUserId(role);
@@ -36,7 +41,7 @@ exports.signup = async (req, res) => {
       name,
       role,
       phone,
-      email,
+      email: req.body.email, // ✅ safely use it now
       password: hashedPassword,
       firebaseUid,
     });
@@ -48,6 +53,7 @@ exports.signup = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 exports.login = async (req, res) => {
   try {
