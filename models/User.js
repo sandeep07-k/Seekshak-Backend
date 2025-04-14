@@ -8,9 +8,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     unique: true,
     sparse: true,
-    required: false,
-  
+    default: "not_provided", // or "undefined", as string
   },
+  
   phone: { type: String, unique: true, required: true },
   password: { type: String, required: true },
   firebaseUid: {
@@ -19,9 +19,9 @@ const userSchema = new mongoose.Schema({
   },
 });
 userSchema.pre('save', function(next) {
-  if (this.email === null) {
-      this.email = undefined; // Ensure email is treated as missing, not null
-  }
+  if (!req.body.email) {
+    req.body.email = "not_provided";
+  }  
   next();
 });
 module.exports = mongoose.model("User", userSchema);
