@@ -22,11 +22,6 @@ exports.signup = async (req, res) => {
     let { email } = req.body;
     const firebaseUid = req.firebaseUid;
 
-    // ✅ Set email to a default string if not provided
-    if (!email || email.trim() === "") {
-      email = "not_provided";
-    }
-
     // ✅ Check for existing user by phone only (email might be default)
     const existingUser = await User.findOne({ phone });
     if (existingUser) {
