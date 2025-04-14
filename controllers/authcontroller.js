@@ -27,7 +27,7 @@ exports.signup = async (req, res) => {
     const userId = await generateUserId(role);
     const hashedPassword = await bcryptjs.hash(password, 10);
 
-    const newUser = new User({ userId, name, role, gender, phone, email, password: hashedPassword, firebaseUid });
+    const newUser = new User({ userId, name, role, phone, email, password: hashedPassword, firebaseUid });
     await newUser.save();
 
     res.status(201).json({ message: "User registered successfully", userId });
