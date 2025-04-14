@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     unique: true,
     sparse: true,
+    required: false,
   
   },
   phone: { type: String, unique: true, required: true },
