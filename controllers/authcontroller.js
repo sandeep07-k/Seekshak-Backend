@@ -21,8 +21,8 @@ exports.signup = async (req, res) => {
     const { role,name, email , phone, password} = req.body;
     const firebaseUid = req.firebaseUid;
 
-    const existingUser = await User.findOne({ email, phone });
-    if (existingUser) return res.status(400).json({ message: "User already exists" });
+    // const existingUser = await User.findOne({ email, phone });
+    // if (existingUser) return res.status(400).json({ message: "User already exists" });
 
     const userId = await generateUserId(role);
     const hashedPassword = await bcryptjs.hash(password, 10);
