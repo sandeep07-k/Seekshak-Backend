@@ -17,5 +17,10 @@ const userSchema = new mongoose.Schema({
     unique: true,
   },
 });
-
+userSchema.pre('save', function(next) {
+  if (this.email === null) {
+      this.email = undefined; // Ensure email is treated as missing, not null
+  }
+  next();
+});
 module.exports = mongoose.model("User", userSchema);
