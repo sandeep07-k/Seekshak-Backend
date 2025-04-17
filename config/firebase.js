@@ -1,19 +1,22 @@
 const admin = require("firebase-admin");
-const serviceAccount = require("./seekshak-c0835-firebase-adminsdk-fbsvc-2df7d74887.json");
+// const serviceAccount = require("./seekshak-c0835-firebase-adminsdk-fbsvc-2df7d74887.json");
 
+
+const serviceAccount = {
+  projectId: process.env.project_id,
+  privateKeyId: process.env.private_key_id,
+  privateKey: process.env.private_key.replace(/\\n/g, '\n'),
+  clientEmail: process.env.client_email,
+  clientId: process.env.client_id,
+  authUri: process.env.auth_uri,
+  tokenUri: process.env.token_uri,
+  authProviderX509CertUrl: process.env.auth_provider_x509_cert_url,
+  clientX509CertUrl: process.env.client_x509_cert_url,
+  universeDomain: process.env.universe_domain,
+};
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  project_id: process.env.project_id,
-    private_key_id: process.env.private_key_id,
-    private_key: process.env.private_key.replace(/\\n/g, '\n'),
-    client_email: process.env.client_email,
-    client_id: process.env.client_id,
-    auth_uri: process.env.auth_uri,
-    token_uri: process.env.token_uri,
-    auth_provider_x509_cert_url: process.env.auth_provider_x509_cert_url,
-    client_x509_cert_url: process.env.client_x509_cert_url,
-    universe_domain: process.env.universe_domain
 });
 
 module.exports = admin;
