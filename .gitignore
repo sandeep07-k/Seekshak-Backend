@@ -1,3 +1,5 @@
-src/.env
 node_modules
-src/config/seekshak-c0835-firebase-adminsdk-fbsvc-2df7d74887.json
+.env
+config/seekshak-c0835-firebase-adminsdk-fbsvc-2df7d74887.json
+config/firebase.js
+config/firebaseConfig.js
