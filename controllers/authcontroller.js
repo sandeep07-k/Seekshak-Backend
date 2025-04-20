@@ -12,8 +12,8 @@ const generateUserId = async (role) => {
     case 'student':
       prefix = 'std';
       break;
-    case 'edu':
-      prefix = 'educator';
+    case 'educator':
+      prefix = 'edu';
       break;
     case 'institute':
       prefix = 'ins';
