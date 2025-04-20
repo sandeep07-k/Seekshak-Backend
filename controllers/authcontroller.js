@@ -6,15 +6,35 @@ const User = require("../models/User");
 
 // Helper to generate userId
 const generateUserId = async (role) => {
-  const prefix = role.charAt(0).toUpperCase();
+  // Convert role to lowercase and prepend with the corresponding prefix
+  let prefix;
+  switch (role.toLowerCase()) {
+    case 'student':
+      prefix = 'std';
+      break;
+    case 'edu':
+      prefix = 'educator';
+      break;
+    case 'institute':
+      prefix = 'ins';
+      break;
+    default:
+      throw new Error("Invalid role provided");
+  }
+
   let userId, exists;
   do {
+    // Generate a random number between 10000 and 99999
     const randomNum = Math.floor(10000 + Math.random() * 90000);
-    userId = `${prefix}-${randomNum}`;
+    userId = `${prefix}${randomNum}`;
+
+    // Check if the userId already exists in the database
     exists = await User.findOne({ userId });
-  } while (exists);
+  } while (exists); // Keep generating until a unique userId is found
+
   return userId;
 };
+
 
 exports.signup = async (req, res) => {
   try {
