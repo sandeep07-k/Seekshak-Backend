@@ -6,7 +6,7 @@ const User = require("../models/User");
 
 // Helper to generate userId
 const generateUserId = async (role) => {
-  // Convert role to lowercase and prepend with the corresponding prefix
+  
   let prefix;
   switch (role.toLowerCase()) {
     case 'student':
