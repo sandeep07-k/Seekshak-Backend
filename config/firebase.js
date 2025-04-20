@@ -2,7 +2,6 @@ const admin = require("firebase-admin");
 require("dotenv").config();
 // const serviceAccount = require("./seekshak-c0835-firebase-adminsdk-fbsvc-2df7d74887.json");
 
-console.log('Project ID:', JSON.stringify(process.env.projectId));
 const serviceAccount = {
   projectId:process.env.project_id,
   privateKeyId:process.env.private_key_id,
