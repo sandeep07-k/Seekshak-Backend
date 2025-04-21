@@ -10,13 +10,13 @@ const generateUserId = async (role) => {
   let prefix;
   switch (role.toLowerCase()) {
     case 'student':
-      prefix = 'std';
+      prefix = 'Std-';
       break;
     case 'educator':
-      prefix = 'edu';
+      prefix = 'Edu-';
       break;
     case 'institute':
-      prefix = 'ins';
+      prefix = 'Ins-';
       break;
     default:
       throw new Error("Invalid role provided");
@@ -25,7 +25,7 @@ const generateUserId = async (role) => {
   let userId, exists;
   do {
     // Generate a random number between 10000 and 99999
-    const randomNum = Math.floor(10000 + Math.random() * 90000);
+    const randomNum = Math.floor(1000 + Math.random() * 9000);
     userId = `${prefix}${randomNum}`;
 
     // Check if the userId already exists in the database
