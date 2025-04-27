@@ -68,11 +68,9 @@ exports.signup = async (req, res) => {
 
     await newUser.save();
 
-    // Generate Firebase token to send back
-    const userRecord = await admin.auth().getUser(firebaseUid);
-    const firebaseToken = await admin.auth().createCustomToken(firebaseUid);
+    
 
-    res.status(201).json({ message: "User signup successfully", userId, firebaseToken });
+    res.status(201).json({ message: "User signup successfully", userId});
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -113,15 +111,14 @@ exports.login = async (req, res) => {
     const isMatch = await bcryptjs.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ message: "Wrong password" });
 
-    // Generate a Firebase custom token
-    const newFirebaseToken = await admin.auth().createCustomToken(user.firebaseUid);
+  
 
     // Success response
     res.status(200).json({
       message: "Login successful",
       UserId: user.userId,
       role: user.role,
-      firebaseToken: newFirebaseToken
+      
     });
 
   } catch (err) {
