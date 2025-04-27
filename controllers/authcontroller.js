@@ -117,7 +117,8 @@ exports.login = async (req, res) => {
     res.status(200).json({
       message: "Login successful",
       UserId: user.userId,
-      role: user.role
+      role: user.role,
+      firebaseToken: newFirebaseToken
     });
 
   } catch (err) {
