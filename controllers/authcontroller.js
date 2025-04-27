@@ -113,6 +113,9 @@ exports.login = async (req, res) => {
     const isMatch = await bcryptjs.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ message: "Wrong password" });
 
+    // Generate a Firebase custom token
+    const newFirebaseToken = await admin.auth().createCustomToken(user.firebaseUid);
+
     // Success response
     res.status(200).json({
       message: "Login successful",
