@@ -68,7 +68,11 @@ exports.signup = async (req, res) => {
 
     await newUser.save();
 
-    res.status(201).json({ message: "User registered successfully", userId });
+    // Generate Firebase token to send back
+    const userRecord = await admin.auth().getUser(firebaseUid);
+    const firebaseToken = await admin.auth().createCustomToken(firebaseUid);
+
+    res.status(201).json({ message: "User signup successfully", userId, firebaseToken });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
