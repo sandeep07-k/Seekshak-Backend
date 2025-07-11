@@ -14,6 +14,7 @@ const connectDB = require("./config/db");
 // Route imports
 const authRoutes = require("./routes/authRoutes");
 const locationRoutes = require('./routes/locationRoutes');
+const postRoutes = require("./routes/postRoutes")
 
 // Initialize Express
 const app = express();
@@ -27,7 +28,7 @@ connectDB();
 // Use Routes
 app.use("/api/auth", authRoutes);
 app.use('/api/location', locationRoutes);
-app.use("/api/posts", require("./routes/postRoutes"));
+app.use("/api/posts", postRoutes);
 
 
 // Start Server
