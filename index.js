@@ -27,6 +27,7 @@ connectDB();
 // Use Routes
 app.use("/api/auth", authRoutes);
 app.use('/api/location', locationRoutes);
+app.use("/api/posts", require("./routes/postRoutes"));
 
 
 // Start Server
