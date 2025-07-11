@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const admin = require("../config/firebase");
-const Post = require("../model/Posts");
+const Post = require("../models/Posts");
 
 router.post("/", async (req, res) => {
   try {
