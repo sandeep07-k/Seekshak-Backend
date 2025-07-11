@@ -2,7 +2,7 @@ const bcryptjs = require("bcryptjs");
 const mongoose = require("mongoose");
 const admin = require("../config/firebase");
 const User = require("../models/User");
-const admin = require("firebase-admin");
+
 
 
 
