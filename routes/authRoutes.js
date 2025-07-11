@@ -4,10 +4,14 @@ const { signup, login, resetPassword, checkUserExists } = require("../controller
 const verifyFirebaseToken = require("../middleware/verifyFirebaseToken");
 
 router.post("/signup", verifyFirebaseToken, signup);
-// router.post("/signup", signup);
-router.post("/login", login);
+// router.post("/login", login);
+router.post("/login", verifyFirebaseToken, login);
 router.post("/reset-password", resetPassword);
 router.get('/check-user', checkUserExists);
+
+
+
+
 
 module.exports = router;
 
