@@ -78,55 +78,6 @@ exports.signup = async (req, res) => {
 };
 
 
-// exports.login = async (req, res) => {
-//   try {
-//     const { role, userId, email, phone, password } = req.body;
-
-//     // Build the query based on which identifier is provided
-//     let query = {};
-
-//     if (email) {
-//       query.email = email;
-//     } else if (phone) {
-//       query.phone = phone;
-//     } else if (userId) {
-//       if (mongoose.Types.ObjectId.isValid(userId)) {
-//         query._id = userId;
-//       } else {
-//         query.userId = userId;
-//       }
-//     } else {
-//       return res.status(400).json({ message: "Please provide email, phone, or userId" });
-//     }
-
-//     // Find the user
-//     const user = await User.findOne(query);
-//     if (!user) return res.status(401).json({ message: "Invalid credentials" });
-
-//     // Check role
-//     if (user.role !== role) {
-//       return res.status(403).json({ message: "Role mismatch. Access denied." });
-//     }
-
-//     // Check password
-//     const isMatch = await bcryptjs.compare(password, user.password);
-//     if (!isMatch) return res.status(401).json({ message: "Wrong password" });
-
-  
-
-//     // Success response
-//     res.status(200).json({
-//       message: "Login successful",
-//       UserId: user.userId,
-//       role: user.role,
-      
-//     });
-
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// };
-
 
 
 
@@ -159,81 +110,33 @@ exports.login = async (req, res) => {
 
 
 
-// exports.resetPassword = async (req, res) => {
-//   try {
-//     const { newPassword, firebaseToken } = req.body;
-
-//     const decodedToken = await admin.auth().verifyIdToken(firebaseToken);
-//     const firebaseUid = decodedToken.uid;
-
-//     const user = await User.findOne({ firebaseUid });
-//     if (!user) return res.status(404).json({ message: "User not found" });
-
-//     const hashedPassword = await bcryptjs.hash(newPassword, 10);
-//     user.password = hashedPassword;
-//     await user.save();
-
-//     res.status(200).json({ message: "Password reset successful" });
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// };
 
 
 // Check if the user exists by phone number
 exports.checkUserExists = async (req, res) => {
-  let { phone, email } = req.query;
+  let { phone } = req.query;
 
-  if (!phone && !email) {
-    return res.status(400).json({ error: 'Phone or Email is required' });
+  if (!phone) {
+    return res.status(400).json({ error: 'Mobile number is required' });
   }
 
-  if (phone) {
-    phone = phone.replace(/\s+/g, '');
-    if (!phone.startsWith('+91')) {
-      phone = '+91' + phone;
-    }
+  // Sanitize and normalize phone number
+  phone = phone.replace(/\s+/g, '');
+  if (!phone.startsWith('+91')) {
+    phone = '+91' + phone;
   }
-
-  if (email) {
-    email = email.trim().toLowerCase();
-  }
-
-  // console.log("Checking for user with:", { phone, email });
 
   try {
-    let phoneExists = false;
-    let emailExists = false;
-
-    if (phone) {
-      const userByPhone = await User.findOne({ phone });
-      phoneExists = !!userByPhone;
-    }
-
-    if (email) {
-      const userByEmail = await User.findOne({ email });
-      emailExists = !!userByEmail;
-    }
-
-    if (phoneExists && emailExists) {
+    const user = await User.findOne({ phone });
+    if (user) {
       return res.status(200).json({
         exists: true,
-        message: "User with this phone and email already exists"
-      });
-    } else if (phoneExists) {
-      return res.status(200).json({
-        exists: true,
-        message: "Phone number already registered.Please Login"
-      });
-    } else if (emailExists) {
-      return res.status(200).json({
-        exists: true,
-        message: "Email already registered"
+        message: "User with this mobile number already exists"
       });
     } else {
       return res.status(200).json({
         exists: false,
-        message: "No user found with this phone or email"
+        message: "No user found with this mobile number"
       });
     }
   } catch (err) {
@@ -241,3 +144,4 @@ exports.checkUserExists = async (req, res) => {
     return res.status(500).json({ error: "Server error. Try again later." });
   }
 };
+

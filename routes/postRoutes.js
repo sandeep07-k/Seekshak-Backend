@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const admin = require("../config/firebase");
 const Post = require("../models/Post");
-const User = require("../models/User"); // ✅ Import the User model
+const User = require("../models/User"); 
 
 router.post("/", async (req, res) => {
   try {
@@ -21,8 +21,8 @@ router.post("/", async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    console.log("🔥 Post from:", user.userId);  // e.g., "Std-1234"
-    console.log("📝 Request body:", req.body);
+    // console.log("🔥 Post from:", user.userId);  // e.g., "Std-1234"
+    // console.log("📝 Request body:", req.body);
 
     const newPost = new Post({
       userId: user.userId, // ✅ Use app-level userId
