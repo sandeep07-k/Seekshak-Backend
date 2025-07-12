@@ -6,7 +6,7 @@ const verifyFirebaseToken = require("../middleware/verifyFirebaseToken");
 router.post("/signup", verifyFirebaseToken, signup);
 router.post("/login", verifyFirebaseToken, login);
 router.get('/check-user', checkUserExists);
-router.get('/get-role', authController.getRoleByPhone);
+router.get('/get-role', authcontroller.getRoleByPhone);
 
 
 
