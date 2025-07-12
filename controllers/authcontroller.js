@@ -107,10 +107,36 @@ exports.login = async (req, res) => {
 };
 
 
+// get user role from backend
+exports.getRoleByPhone = async (req, res) => {
+  let { phone } = req.query;
 
+  if (!phone) return res.status(400).json({ success: false, message: 'Phone number required' });
 
+  if (!phone.startsWith('+91')) {
+    phone = '+91' + phone.trim();
+  }
 
+  try {
+    const user = await User.findOne({ phone });
 
+    if (user) {
+      return res.status(200).json({
+        success: true,
+        role: user.role,
+        message: 'Role fetched successfully',
+      });
+    } else {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
 
 // Check if the user exists by phone number
 exports.checkUserExists = async (req, res) => {
