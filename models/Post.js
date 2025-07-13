@@ -8,6 +8,7 @@ const postSchema = new mongoose.Schema({
   fee: String,
   duration: String,
   noOfClasses: String,
+  classSchedule: String, 
   gender: String,
   demoClassDate: String,
   modeOfClass: String,
@@ -17,3 +18,4 @@ const postSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model('Post', postSchema);
+
