@@ -6,7 +6,6 @@ const userSchema = new mongoose.Schema({
   role: { type: String, enum: ["student", "educator", "institute"], required: true },
   email: { type: String, unique: true, sparse: true, },
   phone: { type: String, unique: true, required: true },
-  password: { type: String, required: true },
   firebaseUid: { type: String, unique: true,},
   location: {
     type: { type: String, enum: ['Point'], default: 'Point'},
