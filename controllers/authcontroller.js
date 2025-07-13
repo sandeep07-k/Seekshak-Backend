@@ -1,4 +1,4 @@
-const bcryptjs = require("bcryptjs");
+
 const mongoose = require("mongoose");
 const admin = require("../config/firebase");
 const User = require("../models/User");
@@ -40,7 +40,7 @@ const generateUserId = async (role) => {
 
 exports.signup = async (req, res) => {
   try {
-    const { role, name, phone, password } = req.body;
+    const { role, name, phone } = req.body;
     const firebaseUid = req.firebaseUid;
 
     const existingUser = await User.findOne({ phone });
@@ -56,7 +56,7 @@ exports.signup = async (req, res) => {
     }
 
     const userId = await generateUserId(role);
-    const hashedPassword = await bcryptjs.hash(password, 10);
+
 
     const newUser = new User({
       userId,
@@ -64,7 +64,6 @@ exports.signup = async (req, res) => {
       role,
       phone,
       email: req.body.email, // ✅ safely use it now
-      password: hashedPassword,
       firebaseUid,
     });
 
