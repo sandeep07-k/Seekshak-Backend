@@ -5,7 +5,7 @@ const postSchema = new mongoose.Schema({
   className: String,
   subject: String,
   educationBoard: String,
-  feeCombined: String,
+  fee: String,
   duration: String,
   noOfClasses: String,
   gender: String,
