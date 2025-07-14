@@ -12,13 +12,13 @@ const generateUserId = async (role) => {
   let prefix;
   switch (role.toLowerCase()) {
     case 'student':
-      prefix = 'Std_';
+      prefix = 'std_';
       break;
     case 'educator':
-      prefix = 'Edu_';
+      prefix = 'edu_';
       break;
     case 'institute':
-      prefix = 'Ins_';
+      prefix = 'ins_';
       break;
     default:
       throw new Error("Invalid role provided");
