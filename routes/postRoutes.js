@@ -46,7 +46,7 @@ const expireOldPosts = async () => {
 // Get My Posts with auto-expire
 router.get("/api/my-posts", async (req, res) => {
   try {
-    await expireOldPosts();
+    await expireOldPosts(); // auto-expire logic
 
     const { userId, page = 1, limit = 10 } = req.query;
     const skip = (parseInt(page) - 1) * parseInt(limit);
@@ -56,12 +56,13 @@ router.get("/api/my-posts", async (req, res) => {
       .skip(skip)
       .limit(parseInt(limit));
 
-    res.json(posts);
+    res.json(posts); // 👈 returns raw array of posts
   } catch (err) {
     console.error("Error getting posts:", err.message);
     res.status(500).json({ message: "Server error" });
   }
 });
+
 
 // Reactivate post
 router.post("/api/reactivate-post/:postId", async (req, res) => {
