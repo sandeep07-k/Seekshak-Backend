@@ -110,7 +110,9 @@ exports.login = async (req, res) => {
 exports.getRoleByPhone = async (req, res) => {
   let { phone } = req.query;
 
-  if (!phone) return res.status(400).json({ success: false, message: 'Phone number required' });
+  if (!phone) {
+    return res.status(400).json({ success: false, message: 'Phone number required' });
+  }
 
   if (!phone.startsWith('+91')) {
     phone = '+91' + phone.trim();
@@ -123,6 +125,7 @@ exports.getRoleByPhone = async (req, res) => {
       return res.status(200).json({
         success: true,
         role: user.role,
+        userId: user.userId, // ✅ Added userId here
         message: 'Role fetched successfully',
       });
     } else {
@@ -136,6 +139,7 @@ exports.getRoleByPhone = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
 
 // Check if the user exists by phone number
 exports.checkUserExists = async (req, res) => {

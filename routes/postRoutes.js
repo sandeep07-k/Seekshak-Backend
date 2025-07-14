@@ -36,7 +36,7 @@ router.post("/", async (req, res) => {
 
 // Auto-expire posts older than 60 days
 const expireOldPosts = async () => {
-  const expiryDate = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000); // 60 days ago
+  const expiryDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); // 60 days ago
   await Post.updateMany(
     { createdAt: { $lt: expiryDate }, status: "active" },
     { $set: { status: "expired" } }
