@@ -19,6 +19,6 @@ const postSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-postSchema.plugin(AutoIncrement, { inc_field: 'tuitionCode:', start_seq: 10001 });
+postSchema.plugin(AutoIncrement, { inc_field: 'tuitionCode', start_seq: 10001 });
 module.exports = mongoose.model('Post', postSchema);
 
