@@ -44,7 +44,7 @@ const expireOldPosts = async () => {
 };
 
 // Get My Posts with auto-expire
-router.get("/api/my-posts", async (req, res) => {
+router.get("/my-posts", async (req, res) => {
   try {
     await expireOldPosts(); // auto-expire logic
 
@@ -65,7 +65,7 @@ router.get("/api/my-posts", async (req, res) => {
 
 
 // Reactivate post
-router.post("/api/reactivate-post/:postId", async (req, res) => {
+router.post("/reactivate-post/:postId", async (req, res) => {
   try {
     const post = await Post.findById(req.params.postId);
     if (!post) return res.status(404).json({ message: "Post not found" });
@@ -82,7 +82,7 @@ router.post("/api/reactivate-post/:postId", async (req, res) => {
 });
 
 // Mark as Filled
-router.post("/api/mark-filled/:postId", async (req, res) => {
+router.post("/mark-filled/:postId", async (req, res) => {
   try {
     const post = await Post.findById(req.params.postId);
     if (!post) return res.status(404).json({ message: "Post not found" });
@@ -97,7 +97,7 @@ router.post("/api/mark-filled/:postId", async (req, res) => {
 });
 
 // Delete Post
-router.delete("/api/delete-post/:postId", async (req, res) => {
+router.delete("/delete-post/:postId", async (req, res) => {
   try {
     await Post.findByIdAndDelete(req.params.postId);
     res.json({ success: true, message: "Post deleted" });
