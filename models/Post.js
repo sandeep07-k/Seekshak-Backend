@@ -16,9 +16,14 @@ const postSchema = new mongoose.Schema({
   modeOfClass: String,
   qualification: String,
   specialReq: String,
+  postedDate: { type: String, required: true }, // 👈 Add this
   createdAt: { type: Date, default: Date.now },
+  status: {
+    type: String,
+    enum: ['active', 'expired', 'paused', 'filled'],
+    default: 'active',
+  }
 });
 
 postSchema.plugin(AutoIncrement, { inc_field: 'tuitionCode', start_seq: 10001 });
 module.exports = mongoose.model('Post', postSchema);
-
