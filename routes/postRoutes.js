@@ -100,10 +100,20 @@ router.post("/mark-filled/:postId", async (req, res) => {
 router.delete("/delete-post/:postId", async (req, res) => {
   try {
     await Post.findByIdAndDelete(req.params.postId);
-    res.json({ success: true, message: "Post deleted" });
+    res.json({ success: true, message: "Post deleted successfully" });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
 });
+
+router.put("/update-post/:id", async (req, res) => {
+  try {
+    const updated = await Post.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json({ success: true, data: updated });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 
 module.exports = router;
