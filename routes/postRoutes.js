@@ -108,12 +108,14 @@ router.delete("/delete-post/:postId", async (req, res) => {
 
 router.put("/update-post/:postId", async (req, res) => {
   try {
-    const updated = await Post.findByIdAndUpdate(req.params.postId, req.body, { new: true });
+    const id = req.params.postId.trim(); // <- Trim here as safety
+    const updated = await Post.findByIdAndUpdate(id, req.body, { new: true });
     res.json({ success: true, data: updated });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
 });
+
 
 
 
