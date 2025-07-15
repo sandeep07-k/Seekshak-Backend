@@ -11,15 +11,24 @@ const updateLocation = async (req, res) => {
     let location = await Location.findOne({ userId });
 
     if (location) {
-      location.latitude = latitude;
-      location.longitude = longitude;
+      location.location.coordinates = [longitude, latitude];
       location.area = area;
       location.city = city;
       location.state = state;
       location.country = country;
       await location.save();
     } else {
-      location = await Location.create({ userId, latitude, longitude, area, city, state, country });
+      location = await Location.create({
+        userId,
+        location: {
+          type: 'Point',
+          coordinates: [longitude, latitude]
+        },
+        area,
+        city,
+        state,
+        country
+      });
     }
 
     res.status(200).json({ message: 'Location updated successfully' });
@@ -29,46 +38,68 @@ const updateLocation = async (req, res) => {
   }
 };
 
+
 const getNearbyEducators = async (req, res) => {
   try {
     const userId = req.user.userId;
-    const userLocation = await Location.findOne({ userId });
 
+    // 1. Get user's current location
+    const userLocation = await Location.findOne({ userId });
     if (!userLocation) {
       return res.status(400).json({ message: 'User location not found' });
     }
 
-    const locations = await Location.find({ userId: { $ne: userId } }).populate('userId');
+    const [lng, lat] = userLocation.location.coordinates;
 
-    const nearbyEducators = [];
+    // 2. Find nearby locations using MongoDB $near
+    const nearbyLocations = await Location.find({
+      userId: { $ne: userId }, // Exclude self
+      location: {
+        $near: {
+          $geometry: {
+            type: 'Point',
+            coordinates: [lng, lat]
+          },
+          $maxDistance: 10000 // 10km in meters
+        }
+      }
+    }).populate('userId'); // join user details
 
-    locations.forEach(loc => {
-      if (!loc.userId) return;
-
-      const distance = geolib.getDistance(
-        { latitude: userLocation.latitude, longitude: userLocation.longitude },
-        { latitude: loc.latitude, longitude: loc.longitude }
-      );
-
-      const distanceInKm = distance / 1000;
-
-      if (loc.userId.role === 'Educator' && distanceInKm <= 10) {
-        nearbyEducators.push({
+    // 3. Filter only educators and build response
+    const educators = nearbyLocations
+      .filter(loc => loc.userId && loc.userId.role === 'Educator')
+      .map(loc => {
+        return {
           id: loc.userId._id,
           name: loc.userId.name || 'Unnamed Educator',
-          distanceInKm: distanceInKm.toFixed(1),
-          area: loc.area,
-          city: loc.city
-        });
-      }
-    });
+          area: loc.area || '',
+          city: loc.city || '',
+          distanceInKm: calcHaversine(lat, lng, loc.location.coordinates[1], loc.location.coordinates[0]).toFixed(1)
+        };
+      });
 
-    res.status(200).json({ educators: nearbyEducators });
+    res.status(200).json({ educators });
+
   } catch (err) {
     console.error('Get Nearby Educators Error:', err);
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+// Optional: Use Haversine formula to calculate distance
+function calcHaversine(lat1, lon1, lat2, lon2) {
+  const toRad = (value) => (value * Math.PI) / 180;
+  const R = 6371; // Earth radius in km
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+    Math.sin(dLon / 2) ** 2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
 
 // Export properly
 module.exports = {

@@ -2,16 +2,27 @@ const mongoose = require('mongoose');
 
 const locationSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+
   location: {
-    type: { type: String, enum: ['Point'], default: 'Point' },
-    coordinates: { type: [Number], required: true } // [longitude, latitude]
+    type: {
+      type: String,
+      enum: ['Point'],
+      required: true,
+      default: 'Point'
+    },
+    coordinates: {
+      type: [Number],
+      required: true  // [longitude, latitude]
+    }
   },
-  area: String,
-  city: String,
-  state: String,
-  country: String
+
+  area: { type: String },
+  city: { type: String },
+  state: { type: String },
+  country: { type: String }
 });
 
-locationSchema.index({ location: '2dsphere' }); // <-- important index
+// ✅ Geo index
+locationSchema.index({ location: '2dsphere' });
 
 module.exports = mongoose.model('Location', locationSchema);
