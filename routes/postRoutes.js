@@ -106,7 +106,7 @@ router.delete("/delete-post/:postId", async (req, res) => {
   }
 });
 
-router.put("/update-post/:id", async (req, res) => {
+router.put("/update-post/:postId", async (req, res) => {
   try {
     const updated = await Post.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.json({ success: true, data: updated });
