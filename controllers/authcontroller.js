@@ -81,6 +81,29 @@ exports.signup = async (req, res) => {
 
 
 // Actual login logic (no password)
+// exports.login = async (req, res) => {
+//   try {
+//     const { role } = req.body;
+//     const phone = req.phone; // ✅ Verified from Firebase token
+
+//     if (!role || !phone) {
+//       return res.status(400).json({ message: "Role and verified phone are required" });
+//     }
+
+//     const user = await User.findOne({ phone, role });
+//     if (!user) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+
+//     res.status(200).json({
+//       message: "Login successful",
+//       userId: user.userId,
+//       role: user.role,
+//     });
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// };
 exports.login = async (req, res) => {
   try {
     const { role } = req.body;
@@ -95,15 +118,29 @@ exports.login = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    // ✅ Generate JWT token
+    const token = jwt.sign(
+      {
+        userId: user.userId,
+        role: user.role,
+        phone: user.phone,
+      },
+      process.env.JWT_SECRET, // Set this in .env
+      { expiresIn: "7d" }      // Optional: token expires in 7 days
+    );
+
+    // ✅ Send token in response
     res.status(200).json({
       message: "Login successful",
       userId: user.userId,
       role: user.role,
+      token, // ← 🔥 TOKEN ADDED HERE
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 
 // get user role from backend
