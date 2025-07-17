@@ -81,29 +81,6 @@ exports.signup = async (req, res) => {
 
 
 // Actual login logic (no password)
-// exports.login = async (req, res) => {
-//   try {
-//     const { role } = req.body;
-//     const phone = req.phone; // ✅ Verified from Firebase token
-
-//     if (!role || !phone) {
-//       return res.status(400).json({ message: "Role and verified phone are required" });
-//     }
-
-//     const user = await User.findOne({ phone, role });
-//     if (!user) {
-//       return res.status(404).json({ message: "User not found" });
-//     }
-
-//     res.status(200).json({
-//       message: "Login successful",
-//       userId: user.userId,
-//       role: user.role,
-//     });
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// };
 exports.login = async (req, res) => {
   try {
     const { role } = req.body;
@@ -144,6 +121,8 @@ exports.login = async (req, res) => {
 
 
 // get user role from backend
+const jwt = require('jsonwebtoken'); // ⬅ make sure you have this at the top
+
 exports.getRoleByPhone = async (req, res) => {
   let { phone } = req.query;
 
@@ -159,10 +138,18 @@ exports.getRoleByPhone = async (req, res) => {
     const user = await User.findOne({ phone });
 
     if (user) {
+      // ✅ Generate JWT token dynamically
+      const token = jwt.sign(
+        { userId: user.userId, phone: user.phone },
+        process.env.JWT_SECRET,
+        { expiresIn: '7d' }
+      );
+
       return res.status(200).json({
         success: true,
         role: user.role,
-        userId: user.userId, // ✅ Added userId here
+        userId: user.userId,
+        token, // ✅ Now you're actually returning a real token
         message: 'Role fetched successfully',
       });
     } else {
@@ -177,37 +164,4 @@ exports.getRoleByPhone = async (req, res) => {
   }
 };
 
-
-// Check if the user exists by phone number
-exports.checkUserExists = async (req, res) => {
-  let { phone } = req.query;
-
-  if (!phone) {
-    return res.status(400).json({ error: 'Mobile number is required' });
-  }
-
-  // Sanitize and normalize phone number
-  phone = phone.replace(/\s+/g, '');
-  if (!phone.startsWith('+91')) {
-    phone = '+91' + phone;
-  }
-
-  try {
-    const user = await User.findOne({ phone });
-    if (user) {
-      return res.status(200).json({
-        exists: true,
-        message: "Mobile number already exists. Please Login"
-      });
-    } else {
-      return res.status(200).json({
-        exists: false,
-        message: "No user found with this mobile number"
-      });
-    }
-  } catch (err) {
-    console.error("Error checking user:", err);
-    return res.status(500).json({ error: "Server error. Try again later." });
-  }
-};
 
