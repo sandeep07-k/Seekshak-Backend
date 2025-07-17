@@ -121,7 +121,9 @@ exports.login = async (req, res) => {
 
 
 // get user role from backend
-const jwt = require('jsonwebtoken'); // ⬅ make sure you have this at the top
+// controllers/authcontroller.js
+
+const jwt = require('jsonwebtoken');
 
 exports.getRoleByPhone = async (req, res) => {
   let { phone } = req.query;
@@ -138,7 +140,6 @@ exports.getRoleByPhone = async (req, res) => {
     const user = await User.findOne({ phone });
 
     if (user) {
-      // ✅ Generate JWT token dynamically
       const token = jwt.sign(
         { userId: user.userId, phone: user.phone },
         process.env.JWT_SECRET,
@@ -149,7 +150,7 @@ exports.getRoleByPhone = async (req, res) => {
         success: true,
         role: user.role,
         userId: user.userId,
-        token, // ✅ Now you're actually returning a real token
+        token,
         message: 'Role fetched successfully',
       });
     } else {
@@ -163,5 +164,6 @@ exports.getRoleByPhone = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
 
 
