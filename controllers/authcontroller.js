@@ -121,10 +121,6 @@ exports.login = async (req, res) => {
 
 
 // get user role from backend
-// controllers/authcontroller.js
-
-const jwt = require('jsonwebtoken');
-
 exports.getRoleByPhone = async (req, res) => {
   let { phone } = req.query;
 
@@ -140,17 +136,11 @@ exports.getRoleByPhone = async (req, res) => {
     const user = await User.findOne({ phone });
 
     if (user) {
-      const token = jwt.sign(
-        { userId: user.userId, phone: user.phone },
-        process.env.JWT_SECRET,
-        { expiresIn: '7d' }
-      );
-
       return res.status(200).json({
         success: true,
         role: user.role,
         userId: user.userId,
-        token,
+        token: user.token,  // ✅ Added userId here
         message: 'Role fetched successfully',
       });
     } else {
@@ -166,4 +156,35 @@ exports.getRoleByPhone = async (req, res) => {
 };
 
 
+// Check if the user exists by phone number
+exports.checkUserExists = async (req, res) => {
+  let { phone } = req.query;
 
+  if (!phone) {
+    return res.status(400).json({ error: 'Mobile number is required' });
+  }
+
+  // Sanitize and normalize phone number
+  phone = phone.replace(/\s+/g, '');
+  if (!phone.startsWith('+91')) {
+    phone = '+91' + phone;
+  }
+
+  try {
+    const user = await User.findOne({ phone });
+    if (user) {
+      return res.status(200).json({
+        exists: true,
+        message: "Mobile number already exists. Please Login"
+      });
+    } else {
+      return res.status(200).json({
+        exists: false,
+        message: "No user found with this mobile number"
+      });
+    }
+  } catch (err) {
+    console.error("Error checking user:", err);
+    return res.status(500).json({ error: "Server error. Try again later." });
+  }
+};
