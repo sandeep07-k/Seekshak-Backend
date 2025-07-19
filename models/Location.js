@@ -16,6 +16,7 @@ const locationSchema = new mongoose.Schema({
     }
   },
 
+  sublocality: { type: String }, // 🆕 Added this
   area: { type: String },
   city: { type: String },
   state: { type: String },

@@ -1,17 +1,17 @@
 const Location = require('../models/Location');
-const geolib = require('geolib');
-const User = require('../models/User');
+
 
 // Define normally
 const updateLocation = async (req, res) => {
   try {
-    const { latitude, longitude, area, city, state, country } = req.body;
+    const { latitude, longitude, area, city, state, country, sublocality } = req.body;
     const userId = req.user.userId;
 
     let location = await Location.findOne({ userId });
 
     if (location) {
       location.location.coordinates = [longitude, latitude];
+      location.sublocality = sublocality; // 🆕 Add this
       location.area = area;
       location.city = city;
       location.state = state;
@@ -24,6 +24,7 @@ const updateLocation = async (req, res) => {
           type: 'Point',
           coordinates: [longitude, latitude]
         },
+        sublocality, // 🆕 Add this
         area,
         city,
         state,
@@ -37,6 +38,7 @@ const updateLocation = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
 
 
 const getNearbyEducators = async (req, res) => {
