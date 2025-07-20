@@ -17,14 +17,25 @@ const postSchema = new mongoose.Schema({
   qualification: String,
   specialReq: String,
   // 🌍 Location Fields
-  latitude: Number,
-  longitude: Number,
   sublocality: String,
   area: String,
   city: String,
   state: String,
   country: String,
-  
+
+   // 📍 GeoJSON location for spatial queries
+  location: {
+    type: {
+      type: String,
+      enum: ['Point'],
+      default: 'Point',
+    },
+    coordinates: {
+      type: [Number], // [longitude, latitude]
+      index: '2dsphere',
+    }
+  },
+
   postedDate: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
   status: {
