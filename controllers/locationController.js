@@ -24,7 +24,7 @@ const updateLocation = async (req, res) => {
           type: 'Point',
           coordinates: [longitude, latitude]
         },
-        sublocality, // 🆕 Add this
+        sublocality, 
         area,
         city,
         state,

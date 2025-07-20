@@ -16,8 +16,18 @@ const postSchema = new mongoose.Schema({
   modeOfClass: String,
   qualification: String,
   specialReq: String,
-  postedDate: { type: String, required: true }, // 👈 Add this
+  postedDate: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
+
+  // 🌍 Location Fields
+  latitude: Number,
+  longitude: Number,
+  sublocality: String,
+  area: String,
+  city: String,
+  state: String,
+  country: String,
+
   status: {
     type: String,
     enum: ['active', 'expired', 'paused', 'filled'],

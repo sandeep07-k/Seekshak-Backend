@@ -12,11 +12,11 @@ const locationSchema = new mongoose.Schema({
     },
     coordinates: {
       type: [Number],
-      required: true  // [longitude, latitude]
+      required: true // [longitude, latitude]
     }
   },
 
-  sublocality: { type: String }, // 🆕 Added this
+  sublocality: { type: String },
   area: { type: String },
   city: { type: String },
   state: { type: String },
