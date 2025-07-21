@@ -6,6 +6,7 @@ const User = require("../models/User");
 const moment = require("moment");
 
 // Add Post
+// Add Post
 router.post("/", async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
@@ -20,10 +21,37 @@ router.post("/", async (req, res) => {
 
     const todayFormatted = moment().format("DD-MM-YYYY");
 
+    // Extract location fields
+    const {
+      latitude,
+      longitude,
+      sublocality,
+      area,
+      city,
+      state,
+      country,
+      ...restBody
+    } = req.body;
+
     const newPost = new Post({
       userId: user.userId,
       postedDate: todayFormatted,
-      ...req.body,
+
+      ...restBody,
+
+      latitude,
+      longitude,
+      sublocality,
+      area,
+      city,
+      state,
+      country,
+
+      // ✅ Convert to GeoJSON format
+      location: {
+        type: "Point",
+        coordinates: [parseFloat(longitude), parseFloat(latitude)]
+      },
     });
 
     const saved = await newPost.save();
@@ -33,6 +61,7 @@ router.post("/", async (req, res) => {
     res.status(500).json({ message: "Error adding post", error: error.message });
   }
 });
+
 
 // Auto-expire posts older than 60 days
 const expireOldPosts = async () => {
@@ -109,12 +138,40 @@ router.delete("/delete-post/:postId", async (req, res) => {
 router.put("/update-post/:postId", async (req, res) => {
   try {
     const postId = req.params.postId.trim();
-    const updated = await Post.findByIdAndUpdate(postId, req.body, { new: true });
+
+    const {
+      latitude,
+      longitude,
+      ...restBody
+    } = req.body;
+
+    // Add GeoJSON location if lat/lon provided
+    if (latitude && longitude) {
+      restBody.location = {
+        type: "Point",
+        coordinates: [parseFloat(longitude), parseFloat(latitude)],
+      };
+      restBody.latitude = latitude;
+      restBody.longitude = longitude;
+    }
+
+    const updated = await Post.findByIdAndUpdate(postId, restBody, { new: true });
     res.json({ success: true, data: updated });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
 });
+
+
+// router.put("/update-post/:postId", async (req, res) => {
+//   try {
+//     const postId = req.params.postId.trim();
+//     const updated = await Post.findByIdAndUpdate(postId, req.body, { new: true });
+//     res.json({ success: true, data: updated });
+//   } catch (err) {
+//     res.status(500).json({ success: false, message: err.message });
+//   }
+// });
 
 
 

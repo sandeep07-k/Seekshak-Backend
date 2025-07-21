@@ -24,17 +24,19 @@ const postSchema = new mongoose.Schema({
   country: String,
 
    // 📍 GeoJSON location for spatial queries
-  location: {
+   location: {
     type: {
       type: String,
       enum: ['Point'],
-      default: 'Point',
+      required: true,
+      default: 'Point'
     },
     coordinates: {
-      type: [Number], // [longitude, latitude]
-      index: '2dsphere',
+      type: [Number],
+      required: true // [longitude, latitude]
     }
   },
+
 
   postedDate: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
@@ -44,6 +46,6 @@ const postSchema = new mongoose.Schema({
     default: 'active',
   }
 });
-
+postSchema.index({ location: '2dsphere' });
 postSchema.plugin(AutoIncrement, { inc_field: 'tuitionCode', start_seq: 10001 });
 module.exports = mongoose.model('Post', postSchema);
