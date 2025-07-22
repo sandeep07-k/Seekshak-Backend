@@ -13,6 +13,7 @@ module.exports = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("✅ Firebase UID:", decodedToken.uid); 
     req.user = decoded; // you can access req.user.userId etc.
     next();
   } catch (err) {
