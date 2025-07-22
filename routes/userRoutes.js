@@ -19,7 +19,7 @@ router.get("/profile", verifyFirebaseToken, async (req, res) => {
             return res.status(404).json({ error: "User not found" });
         }
 
-        const { userId, name, phone } = user;
+        const { userId, name, phone,firebaseUid } = user;
         res.json({ userId, name, phone, firebaseUid });
     } catch (err) {
         console.error("Server error:", err);
