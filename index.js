@@ -29,8 +29,7 @@ connectDB();
 app.use("/api/auth", authRoutes);
 app.use('/api/location', locationRoutes);
 app.use("/api/posts", postRoutes);
-
-
+app.use("/api/user", userRoutes);
 
 
 
