@@ -6,7 +6,6 @@ const User = require("../models/User");
 const moment = require("moment");
 
 // Add Post
-// Add Post
 router.post("/", async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
@@ -161,18 +160,6 @@ router.put("/update-post/:postId", async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 });
-
-
-// router.put("/update-post/:postId", async (req, res) => {
-//   try {
-//     const postId = req.params.postId.trim();
-//     const updated = await Post.findByIdAndUpdate(postId, req.body, { new: true });
-//     res.json({ success: true, data: updated });
-//   } catch (err) {
-//     res.status(500).json({ success: false, message: err.message });
-//   }
-// });
-
 
 
 

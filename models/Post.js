@@ -8,7 +8,6 @@ const postSchema = new mongoose.Schema({
   subject: String,
   educationBoard: String,
   fee: String,
-  duration: String,
   classSchedule: String,
   classTiming: String,
   gender: String,
