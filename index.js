@@ -2,7 +2,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const userRoutes = require("./routes/userRoutes");
+
 
 
 // Load env vars
@@ -15,7 +15,8 @@ const connectDB = require("./config/db");
 // Route imports
 const authRoutes = require("./routes/authRoutes");
 const locationRoutes = require('./routes/locationRoutes');
-const postRoutes = require("./routes/postRoutes")
+const postRoutes = require("./routes/postRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 // Initialize Express
 const app = express();
