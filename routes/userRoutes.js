@@ -9,7 +9,7 @@ router.get("/profile", verifyFirebaseToken, async (req, res) => {
         if (!user) return res.status(404).json({ error: "User not found" });
 
         res.json({
-            userId: user._id,
+            userId: user.userId,
             name: user.name,
             phone: user.phone,
             
