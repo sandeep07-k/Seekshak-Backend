@@ -21,25 +21,34 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 router.post("/upload-profile", upload.single("profileImage"), async (req, res) => {
+  const { firebaseUid } = req.body;
+
+  if (!firebaseUid || !req.file)
+    return res.status(400).json({ error: "Missing data" });
+
+  const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+
   try {
-    const { firebaseUid } = req.body;
-    if (!firebaseUid || !req.file) return res.status(400).json({ error: "Missing data" });
+    const user = await User.findOne({ firebaseUid });
 
-    const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
-    console.log("Uploading for UID:", firebaseUid);
-    console.log("Saving image URL:", imageUrl);
+    // Delete old image if it exists
+    if (user && user.profileImage) {
+      const oldFilename = path.basename(user.profileImage);
+      const oldFilePath = path.join(__dirname, "../uploads", oldFilename);
+      fs.unlink(oldFilePath, (err) => {
+        if (err) console.warn("Old image deletion failed:", err.message);
+      });
+    }
 
-    const user = await User.findOneAndUpdate(
-      { firebaseUid },
-      { profileImage: imageUrl },
-      { new: true }
-    );
+    user.profileImage = imageUrl;
+    await user.save();
 
     res.json({ message: "Uploaded", imageUrl });
   } catch (error) {
     res.status(500).json({ error: "Server error", details: error.message });
   }
 });
+
 
 router.delete("/remove", async (req, res) => {
   const { imageUrl, firebaseUid } = req.body;
