@@ -12,7 +12,7 @@ router.get("/profile", verifyFirebaseToken, async (req, res) => {
             userId: user.userId,
             name: user.name,
             phone: user.phone,
-            
+            profileImage: user.profileImage || "" 
         });
     } catch (err) {
         console.error(err);
