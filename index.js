@@ -6,10 +6,13 @@ const path = require('path');
 
 
 const fs = require('fs');
-const uploadsDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir);
+const imagePath = path.join(__dirname, 'uploads', imageName);
+if (fs.existsSync(imagePath)) {
+  fs.unlinkSync(imagePath);
+} else {
+  console.log("Image does not exist:", imagePath);
 }
+
 
 
 // Load env vars

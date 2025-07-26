@@ -6,7 +6,6 @@ const fs = require("fs");
 
 const User = require("../models/User");
 
-// Storage config
 // Configure storage
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
