@@ -38,23 +38,5 @@ router.get("/profile", verifyFirebaseToken, async (req, res) => {
 //         res.status(500).json({ error: "Server error", details: err.message });
 //     }
 // });
-// router.get("/profile", verifyFirebaseToken, async (req, res) => {
-//     try {
-//         const user = await User.findOne({ firebaseUid: req.firebaseUid });
-//         if (!user) return res.status(404).json({ error: "User not found" });
-
-//         res.json({
-//             success: true,
-//             user: {
-//                 name: user.name,
-//                 phone: user.phone,
-//                 role: user.role,
-                
-//             }
-//         });
-//     } catch (err) {
-//         res.status(500).json({ error: "Server error", details: err.message });
-//     }
-// });
 
 module.exports = router;

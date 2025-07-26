@@ -32,6 +32,10 @@ app.use("/api/auth", authRoutes);
 app.use('/api/location', locationRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/user", userRoutes);
+app.use('/uploads', express.static('uploads'));
+app.use("/api/image", require("./routes/uploadRoutes"));
+
+
 
 
 

@@ -17,7 +17,10 @@ const userSchema = new mongoose.Schema({
   approxArea: {
     type: String,
     default: ''
-  }
+  },
+  
+  profileImage: { type: String, default: "" }
+
 
 });
 userSchema.index({ location: '2dsphere' });
