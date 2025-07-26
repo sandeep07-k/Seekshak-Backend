@@ -2,6 +2,8 @@ const express = require("express");
 const multer = require("multer");
 const path = require("path");
 const router = express.Router();
+const fs = require("fs");
+
 const User = require("../models/User");
 
 // Storage config
@@ -36,19 +38,35 @@ router.post("/upload-profile", upload.single("profileImage"), async (req, res) =
   }
 });
 
-router.delete("/remove", (req, res) => {
-  const imageUrl = req.body.imageUrl; // frontend will send full URL
+router.delete("/remove", async (req, res) => {
+  const { imageUrl, firebaseUid } = req.body;
 
-  if (!imageUrl) return res.status(400).json({ success: false, message: "Missing image URL" });
+  let finalImageUrl = imageUrl;
 
-  const filename = path.basename(imageUrl); // extract abc123.jpg
+  if (!finalImageUrl && firebaseUid) {
+    const user = await User.findOne({ firebaseUid });
+    if (!user || !user.profileImage) {
+      return res.status(404).json({ success: false, message: "Image not found for user" });
+    }
+    finalImageUrl = user.profileImage;
+  }
+
+  if (!finalImageUrl) return res.status(400).json({ success: false, message: "Missing image URL" });
+
+  const filename = path.basename(finalImageUrl);
   const filepath = path.join(__dirname, "../uploads", filename);
 
-  fs.unlink(filepath, (err) => {
+  fs.unlink(filepath, async (err) => {
     if (err) {
       return res.status(500).json({ success: false, message: "Failed to delete image" });
     }
+
+    if (firebaseUid) {
+      await User.findOneAndUpdate({ firebaseUid }, { profileImage: null });
+    }
+
     res.json({ success: true, message: "Image deleted" });
   });
 });
+
 module.exports = router;
