@@ -3,6 +3,11 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 
+const fs = require('fs');
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir);
+}
 
 
 // Load env vars
@@ -32,7 +37,7 @@ app.use("/api/auth", authRoutes);
 app.use('/api/location', locationRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/user", userRoutes);
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use("/api/image", require("./routes/uploadRoutes"));
 
 

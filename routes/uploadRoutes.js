@@ -7,12 +7,13 @@ const fs = require("fs");
 const User = require("../models/User");
 
 // Storage config
+// Configure storage
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "uploads/"); // make sure this folder exists
+    cb(null, 'uploads'); // this must match exactly
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9);
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     cb(null, uniqueSuffix + path.extname(file.originalname));
   }
 });
@@ -25,6 +26,8 @@ router.post("/upload-profile", upload.single("profileImage"), async (req, res) =
     if (!firebaseUid || !req.file) return res.status(400).json({ error: "Missing data" });
 
     const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+    console.log("Uploading for UID:", firebaseUid);
+    console.log("Saving image URL:", imageUrl);
 
     const user = await User.findOneAndUpdate(
       { firebaseUid },
