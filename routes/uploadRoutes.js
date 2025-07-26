@@ -33,7 +33,8 @@ router.post("/upload-profile", upload.single("profileImage"), async (req, res) =
     return res.status(400).json({ error: "Missing firebaseUid or file" });
   }
 
-  const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+  const imageUrl = `https://${req.get("host")}/uploads/${req.file.filename}`;
+
 
   try {
     const user = await User.findOne({ firebaseUid });
