@@ -64,43 +64,45 @@ router.post("/upload-profile", upload.single("profileImage"), async (req, res) =
   }
 });
 
-// 🔺 DELETE: Remove image
-router.delete("/remove", async (req, res) => {
-  const { imageUrl, firebaseUid } = req.body;
-
-  let finalImageUrl = imageUrl;
+// 🔺 DELETE: Remove profile image
+router.post('/remove-profile', async (req, res) => {
+  const { firebaseUid } = req.body;
 
   try {
-    // If imageUrl not provided, get it from user
-    if (!finalImageUrl && firebaseUid) {
-      const user = await User.findOne({ firebaseUid });
-      if (!user || !user.profileImage) {
-        return res.status(404).json({ success: false, message: "Image not found for user" });
-      }
-      finalImageUrl = user.profileImage;
+    const user = await User.findOne({ firebaseUid });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
 
-    if (!finalImageUrl) {
-      return res.status(400).json({ success: false, message: "Missing image URL" });
+    if (user.profileImage) {
+      const imagePath = user.profileImage.replace(`${req.protocol}://${req.get('host')}`, '');
+      const fullPath = path.join(__dirname, '..', imagePath);
+
+      // Delete the file if it exists
+      fs.unlink(fullPath, (err) => {
+        if (err && err.code !== 'ENOENT') {
+          console.error('Image deletion error:', err);
+          return res.status(500).json({ message: 'Failed to delete image file' });
+        }
+      });
+
+      // Clear from DB
+      user.profileImage = "";
+      await user.save();
+
+      return res.json({ message: 'Image removed successfully' });
+    } else {
+      return res.status(400).json({ message: 'No image to delete' });
     }
 
-    const filename = path.basename(finalImageUrl);
-    const filepath = path.join(uploadsDir, filename);
-
-    fs.unlink(filepath, async (err) => {
-      if (err) {
-        return res.status(500).json({ success: false, message: "Failed to delete image" });
-      }
-
-      if (firebaseUid) {
-        await User.findOneAndUpdate({ firebaseUid }, { profileImage: null });
-      }
-
-      res.json({ success: true, message: "Image deleted" });
-    });
-  } catch (error) {
-    res.status(500).json({ success: false, message: "Server error", details: error.message });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+
+
 
 module.exports = router;
